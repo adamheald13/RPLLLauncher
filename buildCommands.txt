@@ -1,0 +1,3 @@
+javac -cp libs/* -d build WebViewSample.java
+
+jar cmvf META-INF/MANIFEST.MF RPLLLauncher.jar *
