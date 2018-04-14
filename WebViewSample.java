@@ -89,6 +89,10 @@ import java.awt.image.BufferedImage;
 import javafx.embed.swing.SwingFXUtils;
 import java.util.prefs.Preferences;
 
+import org.json.*;
+import java.nio.charset.Charset;
+import java.io.BufferedReader;
+
 @SuppressWarnings("deprecation")
 public class WebViewSample extends Application {
     private Scene scene;
@@ -96,6 +100,8 @@ public class WebViewSample extends Application {
 	private static String uploadName;
 	private static boolean running = false;
 	private static Label statuss;
+	
+	private static int Version = 2;
 	
     @Override public void start(Stage stage) {
 		int offset = 45;
@@ -258,6 +264,8 @@ public class WebViewSample extends Application {
             e.printStackTrace();
 		}
 		
+		
+		CheckVersion();
     }
 	
 	private static boolean compressFile(String path) {
@@ -542,7 +550,74 @@ public class WebViewSample extends Application {
 		}
         return 0; // Vanilla
 	}
- 
+	
+	private static void CheckVersion(){
+		try
+		{
+			InputStream is = new URL("https://legacyplayers.com/API.aspx?type=1338").openStream();
+			try {
+			  BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			  String jsonText = null;
+			  String line = null;
+			  StringBuffer stringBuffer = new StringBuffer();
+			  while((line =rd.readLine())!=null){
+				stringBuffer.append(line);
+			  }
+			  jsonText = stringBuffer.toString();
+			  JSONObject json = new JSONObject(jsonText);
+			  
+			  if (json.getInt("Launcher") > Version)
+			  {
+				  JOptionPane.showMessageDialog(null, "The launcher is outdated. Please redownload it!");
+			  }
+			  
+			  // Get Addon version
+			  int exp = getExpansion();
+			  File f;
+			  if (exp == 0) f = new File("Interface/AddOns/RPLLVanilla/core.lua");
+			  else if (exp == 1) f = new File("Interface/AddOns/RPLLTBC/core.lua");
+			  else f = new File("Interface/AddOns/RPLLWOTLK/core.lua");
+			  
+			  if (f.exists())
+			  {
+					FileInputStream fs = new FileInputStream(f);
+					BufferedReader br = new BufferedReader(new InputStreamReader(fs));
+					br.readLine();
+					String str = br.readLine();
+					int ver = 99999999;
+					str = str.replaceAll("\\D+", "");
+					if (str.isEmpty()) {
+						br.close();
+						fs.close();
+					}
+					else
+					{
+						ver = Integer.parseInt(str);
+						br.close();
+						fs.close();
+						
+						if (
+							(exp == 0 && json.getInt("Vanilla") > ver)
+							|| (exp == 1 && json.getInt("TBC") > ver)
+							|| (exp == 2 && json.getInt("WOTLK") > ver)
+						)
+						{
+							JOptionPane.showMessageDialog(null, "The AddOn is outdated. Please redownload it!");
+						}
+					}
+					
+			  }
+			  
+			}
+			finally {
+			  is.close();
+			}
+		}catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
     public static void main(String[] args){
         launch(args);
     }
