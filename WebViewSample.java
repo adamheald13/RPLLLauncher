@@ -63,6 +63,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
+import org.apache.http.ContentTooLongException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -101,7 +102,7 @@ public class WebViewSample extends Application {
 	private static boolean running = false;
 	private static Label statuss;
 	
-	private static int Version = 2;
+	private static int Version = 3;
 	
     @Override public void start(Stage stage) {
 		int offset = 45;
@@ -174,6 +175,8 @@ public class WebViewSample extends Application {
 		b3.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
 				File index = new File("Cache/WDB");
+				if (!index.exists())
+					index = new File("WDB");
 				if (index.exists()){
 					String[] entries = index.list();
 					for(String s: entries){
@@ -278,6 +281,7 @@ public class WebViewSample extends Application {
 		
 		// Renaming files
 		File f1 = new File("Logs/WoWCombatLog.txt");
+		try{if (!f1.exists()) f1.createNewFile();}catch(IOException e){}
 		File f2 = new File(subName+".txt");
 		f1.renameTo(f2);
 		File f3 = new File(path);
@@ -322,7 +326,7 @@ public class WebViewSample extends Application {
 			
 		}
 		catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null, "Could not WoWCombatLog.txt or the addon file!");
+			JOptionPane.showMessageDialog(null, "Could not find the addon file!");
 			return false;
 		}
 		
@@ -418,6 +422,7 @@ public class WebViewSample extends Application {
 		// Finding path
 		if (path.isEmpty())
 		{
+			long time = 0;
 			File dir = new File("WTF/Account");
 			if (dir.exists() && dir.isDirectory())
 			{
@@ -425,38 +430,44 @@ public class WebViewSample extends Application {
 					if (g.exists())
 					{
 						File svd1 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLVanilla.lua");
-						if (svd1.exists()){
+						if (svd1.exists() && time < svd1.lastModified()){
 							path = svd1.getAbsolutePath();
+							time = svd1.lastModified();
 							break;
 						}
 						
 						File svd2 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLTBC.lua");
-						if (svd2.exists()){
+						if (svd2.exists() && time < svd2.lastModified()){
 							path = svd2.getAbsolutePath();
+							time = svd2.lastModified();
 							break;
 						}
 						
 						File svd3 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLWOTLK.lua");
-						if (svd3.exists()){
+						if (svd3.exists() && time < svd3.lastModified()){
 							path = svd3.getAbsolutePath();
+							time = svd3.lastModified();
 							break;
 						}
 						
 						File svd4 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLCATA.lua");
-						if (svd4.exists()){
+						if (svd4.exists() && time < svd4.lastModified()){
 							path = svd4.getAbsolutePath();
+							time = svd4.lastModified();
 							break;
 						}
 						
 						File svd5 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLMOP.lua");
-						if (svd5.exists()){
+						if (svd5.exists() && time < svd5.lastModified()){
 							path = svd5.getAbsolutePath();
+							time = svd5.lastModified();
 							break;
 						}
 						
 						File svd6 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLWOD.lua");
-						if (svd6.exists()){
+						if (svd6.exists() && time < svd6.lastModified()){
 							path = svd6.getAbsolutePath();
+							time = svd6.lastModified();
 							break;
 						}
 					}
@@ -499,7 +510,7 @@ public class WebViewSample extends Application {
 				post.setEntity(requestEntity);
 				
 				try (CloseableHttpResponse response = httpClient.execute(post)) {
-					/*
+					
 					System.out.print(response.getStatusLine());
 					
 					Header[] headers = post.getAllHeaders();
@@ -518,14 +529,23 @@ public class WebViewSample extends Application {
 					if (resEntity != null) {
 						System.out.println(EntityUtils.toString(resEntity));
 					}
-					*/
+					
 					EntityUtils.consume(response.getEntity());
+				}
+				catch(ContentTooLongException e)
+				{
+					// Even if it occours, it uploads just fine
+					// Odd...
+					e.printStackTrace();
 				}
 				catch(IOException e)
 				{
+					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Some error occoured during the upload. Please try later again!");
 					return;
 				}
+				
+				JOptionPane.showMessageDialog(null, "Upload complete!");
 			}
 		};
 		thread.start();
