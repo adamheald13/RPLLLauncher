@@ -102,7 +102,7 @@ public class WebViewSample extends Application {
 	private static boolean running = false;
 	private static Label statuss;
 	
-	private static int Version = 3;
+	private static int Version = 4;
 	
     @Override public void start(Stage stage) {
 		int offset = 45;
@@ -433,42 +433,36 @@ public class WebViewSample extends Application {
 						if (svd1.exists() && time < svd1.lastModified()){
 							path = svd1.getAbsolutePath();
 							time = svd1.lastModified();
-							break;
 						}
 						
 						File svd2 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLTBC.lua");
 						if (svd2.exists() && time < svd2.lastModified()){
 							path = svd2.getAbsolutePath();
 							time = svd2.lastModified();
-							break;
 						}
 						
 						File svd3 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLWOTLK.lua");
 						if (svd3.exists() && time < svd3.lastModified()){
 							path = svd3.getAbsolutePath();
 							time = svd3.lastModified();
-							break;
 						}
 						
 						File svd4 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLCATA.lua");
 						if (svd4.exists() && time < svd4.lastModified()){
 							path = svd4.getAbsolutePath();
 							time = svd4.lastModified();
-							break;
 						}
 						
 						File svd5 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLMOP.lua");
 						if (svd5.exists() && time < svd5.lastModified()){
 							path = svd5.getAbsolutePath();
 							time = svd5.lastModified();
-							break;
 						}
 						
 						File svd6 = new File("WTF/Account/"+g.getName()+"/SavedVariables/RPLLWOD.lua");
 						if (svd6.exists() && time < svd6.lastModified()){
 							path = svd6.getAbsolutePath();
 							time = svd6.lastModified();
-							break;
 						}
 					}
 				}
