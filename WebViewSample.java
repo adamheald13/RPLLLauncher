@@ -31,6 +31,7 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.*;
 
+import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -368,6 +369,7 @@ public class WebViewSample extends Application {
 			}
 			else
 			{
+			    AddRangeToConfig("WTF/Config.wtf");
 				p = Runtime.getRuntime().exec("WoW.exe");
 			}
 			running = true;
@@ -384,8 +386,16 @@ public class WebViewSample extends Application {
 			JOptionPane.showMessageDialog(null, "Could not find WoW.exe");
 		}
 	}
-	
-	public static void ClearCache(){
+
+    private static void AddRangeToConfig(String filePath) {
+        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+            stream.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void ClearCache(){
 		File dir = new File("WTF/Account");
 		if (dir.exists() && dir.isDirectory())
 		{
